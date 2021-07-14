@@ -3,6 +3,7 @@ package main_page
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
 	adapters "github.com/wooseopkim/ck/v2/adapters/main_page"
@@ -19,6 +20,11 @@ func NewWidget(inferRemoteTime *usecases.InferRemoteTime) fyne.CanvasObject {
 
 	urlEntry := widget.NewEntry()
 	protocolSelect := widget.NewSelect([]string{http, https}, func(s string) {})
+	inputContainer := fyne.NewContainerWithLayout(
+		layout.NewFormLayout(),
+		protocolSelect,
+		urlEntry,
+	)
 	datetimeLabel := widget.NewLabel("")
 	submitButton := widget.NewButton("Go", func() {
 		presenter.OnSubmit(protocolSelect.Selected + urlEntry.Text)
@@ -28,10 +34,7 @@ func NewWidget(inferRemoteTime *usecases.InferRemoteTime) fyne.CanvasObject {
 	presenter = NewPresenter(view, inferRemoteTime)
 
 	return container.NewVBox(
-		container.NewHBox(
-			protocolSelect,
-			urlEntry,
-		),
+		inputContainer,
 		datetimeLabel,
 		submitButton,
 	)

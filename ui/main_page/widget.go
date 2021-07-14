@@ -36,6 +36,7 @@ func NewWidget(inferRemoteTime *usecases.InferRemoteTime) fyne.CanvasObject {
 	return container.NewVBox(
 		inputContainer,
 		datetimeLabel,
+		layout.NewSpacer(),
 		submitButton,
 	)
 }

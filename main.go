@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"github.com/wooseopkim/ck/v2/ui/main_page"
 	"github.com/wooseopkim/ck/v2/usecases"
@@ -22,5 +23,6 @@ func main() {
 	})
 
 	w.SetContent(main_page.NewWidget(inferRemoteTime))
+	w.Resize(fyne.NewSize(800.0, 600.0))
 	w.ShowAndRun()
 }

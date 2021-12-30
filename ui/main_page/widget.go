@@ -6,7 +6,6 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
-	adapters "github.com/wooseopkim/ck/v2/adapters/main_page"
 	"github.com/wooseopkim/ck/v2/usecases"
 )
 
@@ -18,8 +17,6 @@ const (
 func NewWidget(
 	inferRemoteTime *usecases.InferRemoteTime,
 ) fyne.CanvasObject {
-	var presenter adapters.Presenter
-
 	urlEntry := widget.NewEntry()
 	protocolSelect := widget.NewSelect([]string{http, https}, func(s string) {})
 	protocolSelect.SetSelected(protocolSelect.Options[0])
@@ -29,18 +26,19 @@ func NewWidget(
 		urlEntry,
 	)
 	datetimeLabel := widget.NewLabel("")
-	submitButton := widget.NewButton("Go", func() {
-		presenter.OnSubmit(protocolSelect.Selected + urlEntry.Text)
-	})
+	submitButton := widget.NewButton("Go", func() {})
 
 	view := NewView(
+		protocolSelect,
+		urlEntry,
 		datetimeLabel,
 		submitButton,
 	)
-	presenter = NewPresenter(
+	presenter := NewPresenter(
 		view,
 		inferRemoteTime,
 	)
+	view.Attach(presenter)
 
 	return container.NewVBox(
 		inputContainer,

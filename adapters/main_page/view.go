@@ -3,6 +3,7 @@ package main_page
 import "time"
 
 type View interface {
+	Attach(presenter Presenter)
 	StartTicking(offset time.Duration, interval time.Duration)
 	PushRequestEvent(url string)
 	PushSleepEvent(url string, delay time.Duration)

@@ -10,13 +10,30 @@ import (
 )
 
 type view struct {
+	presenter     adapters.Presenter
 	datetimeLabel *widget.Label
 	submitButton  *widget.Button
 	ticker        *time.Ticker
 }
 
-func NewView(datetimeLabel *widget.Label, submitButton *widget.Button) adapters.View {
-	return &view{datetimeLabel: datetimeLabel, submitButton: submitButton}
+func NewView(
+	protocolSelect *widget.Select,
+	urlEntry *widget.Entry,
+	datetimeLabel *widget.Label,
+	submitButton *widget.Button,
+) adapters.View {
+	v := &view{
+		datetimeLabel: datetimeLabel,
+		submitButton:  submitButton,
+	}
+	submitButton.OnTapped = func() {
+		v.presenter.OnSubmit(protocolSelect.Selected + urlEntry.Text)
+	}
+	return v
+}
+
+func (v *view) Attach(presenter adapters.Presenter) {
+	v.presenter = presenter
 }
 
 func (v *view) StartTicking(offset time.Duration, interval time.Duration) {

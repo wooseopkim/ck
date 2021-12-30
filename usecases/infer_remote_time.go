@@ -4,17 +4,27 @@ import (
 	"time"
 
 	"github.com/wooseopkim/ck/v2/entities"
+	"github.com/wooseopkim/goclock"
+	"github.com/wooseopkim/goclock/event"
 )
 
 type InferRemoteTime struct {
-	run func(string) (time.Duration, error)
+	eventChannel chan event.Event
 }
 
-func NewInferRemoteTime(run func(string) (time.Duration, error)) *InferRemoteTime {
-	return &InferRemoteTime{run: run}
+func NewInferRemoteTime() *InferRemoteTime {
+	return &InferRemoteTime{make(chan event.Event)}
 }
 
 func (i *InferRemoteTime) Run(url entities.URL) (time.Duration, error) {
-	offset, err := i.run(string(url))
-	return offset, err
+	req := goclock.Request{URL: string(url), EventChannel: i.eventChannel}
+	gc, err := goclock.Create(req)
+	if err != nil {
+		return 0, err
+	}
+	return gc.Offset, nil
+}
+
+func (i *InferRemoteTime) EventChannel() chan event.Event {
+	return i.eventChannel
 }

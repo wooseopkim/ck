@@ -43,6 +43,8 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/wooseopkim/goclock v0.0.0-20210705123710-b8c159a0e73b h1:ahcjbv/pogsk0cfUVwnr0n3jz6NYB+fA3nTcM8qV6bQ=
 github.com/wooseopkim/goclock v0.0.0-20210705123710-b8c159a0e73b/go.mod h1:bS9y/Als1hxP1Qbv1R5p5N8gOqXYQ1h4z7YK6xCfkyI=
+github.com/wooseopkim/goclock v0.0.0-20211230171253-e8f70d192355 h1:rcIrhMccs8azsx84Z5fJL2ARxiVpqr/36qPeoVyLiDI=
+github.com/wooseopkim/goclock v0.0.0-20211230171253-e8f70d192355/go.mod h1:bS9y/Als1hxP1Qbv1R5p5N8gOqXYQ1h4z7YK6xCfkyI=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=

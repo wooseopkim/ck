@@ -15,7 +15,9 @@ const (
 	https = "https://"
 )
 
-func NewWidget(inferRemoteTime *usecases.InferRemoteTime) fyne.CanvasObject {
+func NewWidget(
+	inferRemoteTime *usecases.InferRemoteTime,
+) fyne.CanvasObject {
 	var presenter adapters.Presenter
 
 	urlEntry := widget.NewEntry()
@@ -31,8 +33,14 @@ func NewWidget(inferRemoteTime *usecases.InferRemoteTime) fyne.CanvasObject {
 		presenter.OnSubmit(protocolSelect.Selected + urlEntry.Text)
 	})
 
-	view := NewView(datetimeLabel)
-	presenter = NewPresenter(view, inferRemoteTime)
+	view := NewView(
+		datetimeLabel,
+		submitButton,
+	)
+	presenter = NewPresenter(
+		view,
+		inferRemoteTime,
+	)
 
 	return container.NewVBox(
 		inputContainer,

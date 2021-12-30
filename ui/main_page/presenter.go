@@ -49,7 +49,9 @@ func (p *presenter) OnStart() {
 }
 
 func (p *presenter) OnSubmit(url string) {
+	p.view.DisableInput()
 	offset, err := p.inferRemoteTime.Run(entities.URL(url))
+	p.view.EnableInput()
 	if err != nil {
 		return
 	}

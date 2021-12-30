@@ -8,4 +8,6 @@ type View interface {
 	PushSleepEvent(url string, delay time.Duration)
 	PushFetchEvent(url string)
 	PushCalibrateEvent(url string)
+	DisableInput()
+	EnableInput()
 }

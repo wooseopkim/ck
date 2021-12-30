@@ -49,3 +49,11 @@ func (v *view) PushFetchEvent(url string) {
 func (v *view) PushCalibrateEvent(url string) {
 	widgets.AppendText(v.datetimeLabel, "CALIBRATE "+url+"\n")
 }
+
+func (v *view) DisableInput() {
+	v.submitButton.Disable()
+}
+
+func (v *view) EnableInput() {
+	v.submitButton.Enable()
+}

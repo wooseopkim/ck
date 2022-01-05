@@ -1,7 +1,6 @@
 package main_page
 
 import (
-	"fmt"
 	"time"
 
 	adapters "github.com/wooseopkim/ck/v2/adapters/main_page"
@@ -29,7 +28,6 @@ func NewPresenter(
 }
 
 func (p *presenter) OnStart() {
-	fmt.Println("OnStart")
 	go func() {
 		for {
 			e := <-p.inferRemoteTime.EventChannel()

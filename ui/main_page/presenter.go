@@ -12,7 +12,8 @@ import (
 type presenter struct {
 	inferRemoteTime *usecases.InferRemoteTime
 
-	view adapters.View
+	view   adapters.View
+	ticker *time.Ticker
 }
 
 func NewPresenter(
@@ -53,5 +54,18 @@ func (p *presenter) OnSubmit(url string) {
 	if err != nil {
 		return
 	}
-	p.view.StartTicking(offset, time.Millisecond)
+	if p.ticker != nil {
+		p.ticker.Stop()
+	}
+	p.ticker = time.NewTicker(time.Millisecond)
+	go func() {
+		for {
+			select {
+			case <-p.ticker.C:
+				p.view.DisplayTime(time.Now().Add(offset))
+			default:
+				return
+			}
+		}
+	}()
 }

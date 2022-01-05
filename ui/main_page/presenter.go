@@ -25,11 +25,11 @@ func NewPresenter(
 		view:            view,
 		inferRemoteTime: inferRemoteTime,
 	}
-	p.OnStart()
+	p.initialize()
 	return p
 }
 
-func (p *presenter) OnStart() {
+func (p *presenter) initialize() {
 	if p.initialized {
 		return
 	}

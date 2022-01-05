@@ -48,24 +48,26 @@ func (p *presenter) OnStart() {
 }
 
 func (p *presenter) OnSubmit(url string) {
+	if p.ticker != nil {
+		p.ticker.Stop()
+		p.ticker = nil
+	}
 	p.view.DisableInput()
 	offset, err := p.inferRemoteTime.Run(entities.URL(url))
 	p.view.EnableInput()
 	if err != nil {
 		return
 	}
-	if p.ticker != nil {
-		p.ticker.Stop()
-	}
 	p.ticker = time.NewTicker(time.Millisecond)
-	go func() {
+	go func(ticker *time.Ticker) {
 		for {
-			select {
-			case <-p.ticker.C:
-				p.view.DisplayTime(time.Now().Add(offset))
-			default:
+			if p.ticker == nil {
 				return
 			}
+			select {
+			case <-ticker.C:
+				p.view.DisplayTime(time.Now().Add(offset))
+			}
 		}
-	}()
+	}(p.ticker)
 }

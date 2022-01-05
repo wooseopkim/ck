@@ -12,8 +12,9 @@ import (
 type presenter struct {
 	inferRemoteTime *usecases.InferRemoteTime
 
-	view   adapters.View
-	ticker *time.Ticker
+	initialized bool
+	view        adapters.View
+	ticker      *time.Ticker
 }
 
 func NewPresenter(
@@ -29,6 +30,10 @@ func NewPresenter(
 }
 
 func (p *presenter) OnStart() {
+	if p.initialized {
+		return
+	}
+	p.initialized = true
 	go func() {
 		for {
 			e := <-p.inferRemoteTime.EventChannel()

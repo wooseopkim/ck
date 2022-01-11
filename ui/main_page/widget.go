@@ -27,9 +27,11 @@ func NewWidget(
 		urlEntry,
 	)
 	panelLabel := widget.NewLabel("")
+	panelLabel.Alignment = fyne.TextAlignCenter
 	submitButton := widget.NewButton("Go", func() {})
 	layout := container.NewVBox(
 		inputContainer,
+		layout.NewSpacer(),
 		panelLabel,
 		layout.NewSpacer(),
 		submitButton,

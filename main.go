@@ -20,6 +20,6 @@ func main() {
 		inferRemoteTime,
 	)
 	w.SetContent(widget)
-	w.Resize(fyne.NewSize(800.0, 600.0))
+	w.Resize(fyne.NewSize(800.0, 100.0))
 	w.ShowAndRun()
 }

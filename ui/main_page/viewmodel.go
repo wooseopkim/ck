@@ -118,7 +118,7 @@ func (p *presenter) Panel() binding.String {
 	})
 	widgets.OnUntypedChange(p.now, func(value interface{}) {
 		if value == nil || value == clearPanel {
-			panel.Set("")
+			panel.Set("Welcome to CK!")
 			return
 		}
 		url, _ := target.Get()

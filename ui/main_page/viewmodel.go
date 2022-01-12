@@ -14,33 +14,41 @@ import (
 )
 
 const (
-	clearPanel      = "clearPanel"
-	timeTemplate    = "15:04:05.99"
-	timeTemplateLen = len(timeTemplate)
+	clearPanel = "clearPanel"
 )
 
 type viewModel struct {
 	inferRemoteTime *usecases.InferRemoteTime
+	testRemoteTime  *usecases.TestRemoteTime
 
 	initialized                 bool
 	ticker                      *time.Ticker
 	tickerSubscriptionCanceller chan interface{}
 
-	event        binding.Untyped // event.Event
-	inputEnabled binding.Bool
-	now          binding.Untyped // time.Time
+	inferRemoteTimeEvent binding.Untyped // event.Event
+	inputEnabled         binding.Bool
+	target               binding.String
+	now                  binding.Untyped // time.Time
+	testerReady          binding.Bool
+	testResult           binding.Untyped // adapters.TestResult
 }
 
 func NewViewModel(
 	inferRemoteTime *usecases.InferRemoteTime,
+	testRemoteTime *usecases.TestRemoteTime,
 ) adapters.ViewModel {
 	v := &viewModel{
 		inferRemoteTime:             inferRemoteTime,
+		testRemoteTime:              testRemoteTime,
 		tickerSubscriptionCanceller: make(chan interface{}),
-		event:                       binding.NewUntyped(),
+		inferRemoteTimeEvent:        binding.NewUntyped(),
 		inputEnabled:                binding.NewBool(),
+		target:                      binding.NewString(),
 		now:                         binding.NewUntyped(),
+		testerReady:                 binding.NewBool(),
+		testResult:                  binding.NewUntyped(),
 	}
+	v.target.Set("Welcome to CK!")
 	v.inputEnabled.Set(true)
 	v.initialize()
 	return v
@@ -54,7 +62,7 @@ func (v *viewModel) initialize() {
 	go func() {
 		for {
 			e := <-v.inferRemoteTime.EventChannel()
-			v.event.Set(e)
+			v.inferRemoteTimeEvent.Set(e)
 		}
 	}()
 }
@@ -65,6 +73,7 @@ func (v *viewModel) OnSubmit(url string) {
 
 func (v *viewModel) handleSubmit(url string) {
 	v.inputEnabled.Set(false)
+	v.testerReady.Set(false)
 
 	if v.ticker != nil {
 		go func() {
@@ -79,6 +88,7 @@ func (v *viewModel) handleSubmit(url string) {
 	v.ticker = time.NewTicker(time.Millisecond)
 
 	v.inputEnabled.Set(true)
+	v.testerReady.Set(true)
 
 	if err != nil {
 		return
@@ -90,15 +100,41 @@ func (v *viewModel) handleSubmit(url string) {
 			case <-v.tickerSubscriptionCanceller:
 				return
 			case now := <-v.ticker.C:
+				fmt.Println(offset, now.Format("15:04:05.99"), now.Add(offset).Format("15:04:05.99"))
 				v.now.Set(now.Add(offset))
 			}
 		}
 	}()
 }
 
+func (v *viewModel) OnTest() {
+	url, _ := v.target.Get()
+	go v.handleTest(url)
+}
+
+func (v *viewModel) handleTest(url string) {
+	v.inputEnabled.Set(false)
+
+	clientTime := time.Now()
+	clockTime, _ := v.now.Get()
+	remoteTime, err := v.testRemoteTime.Run(entities.URL(url))
+
+	v.inputEnabled.Set(true)
+
+	if err != nil {
+		return
+	}
+
+	v.testResult.Set(adapters.TestResult{
+		RemoteTime: remoteTime,
+		ClientTime: clientTime,
+		ClockTime:  clockTime.(time.Time),
+	})
+}
+
 func (v *viewModel) Panel() binding.String {
 	panel := binding.NewString()
-	widgets.OnUntypedChange(v.event, func(value interface{}) {
+	widgets.OnUntypedChange(v.inferRemoteTimeEvent, func(value interface{}) {
 		switch value.(type) {
 		case event.Request:
 			panel.Set("REQUSTED")
@@ -128,25 +164,31 @@ func (v *viewModel) Panel() binding.String {
 }
 
 func (v *viewModel) Target() binding.String {
-	target := binding.NewString()
-	widgets.OnUntypedChange(v.event, func(value interface{}) {
+	widgets.OnUntypedChange(v.inferRemoteTimeEvent, func(value interface{}) {
 		switch value.(type) {
 		case event.Request:
 			url := value.(event.Request).Url
-			target.Set(url)
+			v.target.Set(url)
 		case event.Sleep:
 			url := value.(event.Sleep).Url
-			target.Set(url)
+			v.target.Set(url)
 		case event.Fetch:
 			url := value.(event.Fetch).Url
-			target.Set(url)
+			v.target.Set(url)
 		case event.Calibrate:
 			url := value.(event.Calibrate).Url
-			target.Set(url)
+			v.target.Set(url)
 		}
 	})
-	target.Set("Welcome to CK!")
-	return target
+	return v.target
+}
+
+func (v *viewModel) TesterReady() binding.Bool {
+	return v.testerReady
+}
+
+func (v *viewModel) TestResult() binding.Untyped {
+	return v.testResult
 }
 
 func (v *viewModel) InputEnabled() binding.Bool {

@@ -15,9 +15,11 @@ func main() {
 	a.Settings().SetTheme(theme.LightTheme())
 
 	inferRemoteTime := usecases.NewInferRemoteTime()
+	testRemoteTime := usecases.NewTestRemoteTime()
 
 	widget := main_page.NewWidget(
 		inferRemoteTime,
+		testRemoteTime,
 	)
 	w.SetContent(widget)
 	w.Resize(fyne.NewSize(800.0, 100.0))

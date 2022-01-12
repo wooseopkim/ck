@@ -28,10 +28,14 @@ func NewWidget(
 	)
 	panelLabel := widget.NewLabel("")
 	panelLabel.Alignment = fyne.TextAlignCenter
+	targetLabel := widget.NewLabel("")
+	targetLabel.Alignment = fyne.TextAlignCenter
+	targetLabel.TextStyle = fyne.TextStyle{Bold: true}
 	submitButton := widget.NewButton("Go", func() {})
 	layout := container.NewVBox(
 		inputContainer,
 		layout.NewSpacer(),
+		targetLabel,
 		panelLabel,
 		layout.NewSpacer(),
 		submitButton,
@@ -53,6 +57,12 @@ func NewWidget(
 	widgets.OnStringChange(panel, func(value string) {
 		panelLabel.Text = value
 		panelLabel.Refresh()
+		submitButton.Refresh()
+	})
+	target := vm.Target()
+	widgets.OnStringChange(target, func(value string) {
+		targetLabel.Text = value
+		targetLabel.Refresh()
 		submitButton.Refresh()
 	})
 

@@ -5,5 +5,6 @@ import "fyne.io/fyne/v2/data/binding"
 type ViewModel interface {
 	OnSubmit(url string)
 	Panel() binding.String
+	Target() binding.String
 	InputEnabled() binding.Bool
 }

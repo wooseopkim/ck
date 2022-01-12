@@ -2,6 +2,7 @@ package main_page
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"fyne.io/fyne/v2/data/binding"
@@ -12,7 +13,11 @@ import (
 	"github.com/wooseopkim/goclock/event"
 )
 
-const clearPanel = "clearPanel"
+const (
+	clearPanel      = "clearPanel"
+	timeTemplate    = "15:04:05.99"
+	timeTemplateLen = len(timeTemplate)
+)
 
 type viewModel struct {
 	inferRemoteTime *usecases.InferRemoteTime
@@ -93,39 +98,55 @@ func (v *viewModel) handleSubmit(url string) {
 
 func (v *viewModel) Panel() binding.String {
 	panel := binding.NewString()
+	widgets.OnUntypedChange(v.event, func(value interface{}) {
+		switch value.(type) {
+		case event.Request:
+			panel.Set("REQUSTED")
+		case event.Sleep:
+			delay := value.(event.Sleep).Delay
+			ms := delay / time.Millisecond
+			panel.Set(fmt.Sprintf("SLEEPING FOR %dms", ms))
+		case event.Fetch:
+			panel.Set("FETCHING")
+		case event.Calibrate:
+			panel.Set("CALIBRATING")
+		}
+	})
+	widgets.OnUntypedChange(v.now, func(value interface{}) {
+		if value == nil || value == clearPanel {
+			panel.Set("Type URL above and click the button")
+			return
+		}
+		time := value.(time.Time).Format(timeTemplate)
+		timeLen := len(time)
+		if timeLen < timeTemplateLen {
+			time = time + strings.Repeat("0", timeTemplateLen-timeLen)
+		}
+		panel.Set(time)
+	})
+	return panel
+}
+
+func (v *viewModel) Target() binding.String {
 	target := binding.NewString()
 	widgets.OnUntypedChange(v.event, func(value interface{}) {
 		switch value.(type) {
 		case event.Request:
 			url := value.(event.Request).Url
 			target.Set(url)
-			panel.Set(fmt.Sprintf("%s REQUSTED", url))
 		case event.Sleep:
 			url := value.(event.Sleep).Url
-			delay := value.(event.Sleep).Delay
-			ms := delay / time.Millisecond
 			target.Set(url)
-			panel.Set(fmt.Sprintf("%s SLEEPING FOR %dms", url, ms))
 		case event.Fetch:
 			url := value.(event.Fetch).Url
 			target.Set(url)
-			panel.Set(fmt.Sprintf("%s FETCHING", url))
 		case event.Calibrate:
 			url := value.(event.Calibrate).Url
 			target.Set(url)
-			panel.Set(fmt.Sprintf("%s CALIBRATING", url))
 		}
 	})
-	widgets.OnUntypedChange(v.now, func(value interface{}) {
-		if value == nil || value == clearPanel {
-			panel.Set("Welcome to CK!")
-			return
-		}
-		url, _ := target.Get()
-		time := value.(time.Time).Format("15:04:05.99")
-		panel.Set(fmt.Sprintf("%s %s", url, time))
-	})
-	return panel
+	target.Set("Welcome to CK!")
+	return target
 }
 
 func (v *viewModel) InputEnabled() binding.Bool {

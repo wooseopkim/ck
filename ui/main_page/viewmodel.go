@@ -14,7 +14,7 @@ import (
 
 const clearPanel = "clearPanel"
 
-type presenter struct {
+type viewModel struct {
 	inferRemoteTime *usecases.InferRemoteTime
 
 	initialized                 bool
@@ -29,51 +29,51 @@ type presenter struct {
 func NewViewModel(
 	inferRemoteTime *usecases.InferRemoteTime,
 ) adapters.ViewModel {
-	p := &presenter{
+	v := &viewModel{
 		inferRemoteTime:             inferRemoteTime,
 		tickerSubscriptionCanceller: make(chan interface{}),
 		event:                       binding.NewUntyped(),
 		inputEnabled:                binding.NewBool(),
 		now:                         binding.NewUntyped(),
 	}
-	p.inputEnabled.Set(true)
-	p.initialize()
-	return p
+	v.inputEnabled.Set(true)
+	v.initialize()
+	return v
 }
 
-func (p *presenter) initialize() {
-	if p.initialized {
+func (v *viewModel) initialize() {
+	if v.initialized {
 		return
 	}
-	p.initialized = true
+	v.initialized = true
 	go func() {
 		for {
-			e := <-p.inferRemoteTime.EventChannel()
-			p.event.Set(e)
+			e := <-v.inferRemoteTime.EventChannel()
+			v.event.Set(e)
 		}
 	}()
 }
 
-func (p *presenter) OnSubmit(url string) {
-	go p.handleSubmit(url)
+func (v *viewModel) OnSubmit(url string) {
+	go v.handleSubmit(url)
 }
 
-func (p *presenter) handleSubmit(url string) {
-	p.inputEnabled.Set(false)
+func (v *viewModel) handleSubmit(url string) {
+	v.inputEnabled.Set(false)
 
-	if p.ticker != nil {
+	if v.ticker != nil {
 		go func() {
-			p.inferRemoteTime.Cancel()
-			p.tickerSubscriptionCanceller <- nil
+			v.inferRemoteTime.Cancel()
+			v.tickerSubscriptionCanceller <- nil
 		}()
-		p.ticker.Stop()
-		p.now.Set(clearPanel)
+		v.ticker.Stop()
+		v.now.Set(clearPanel)
 	}
 
-	offset, err := p.inferRemoteTime.Run(entities.URL(url))
-	p.ticker = time.NewTicker(time.Millisecond)
+	offset, err := v.inferRemoteTime.Run(entities.URL(url))
+	v.ticker = time.NewTicker(time.Millisecond)
 
-	p.inputEnabled.Set(true)
+	v.inputEnabled.Set(true)
 
 	if err != nil {
 		return
@@ -82,19 +82,19 @@ func (p *presenter) handleSubmit(url string) {
 	go func() {
 		for {
 			select {
-			case <-p.tickerSubscriptionCanceller:
+			case <-v.tickerSubscriptionCanceller:
 				return
-			case now := <-p.ticker.C:
-				p.now.Set(now.Add(offset))
+			case now := <-v.ticker.C:
+				v.now.Set(now.Add(offset))
 			}
 		}
 	}()
 }
 
-func (p *presenter) Panel() binding.String {
+func (v *viewModel) Panel() binding.String {
 	panel := binding.NewString()
 	target := binding.NewString()
-	widgets.OnUntypedChange(p.event, func(value interface{}) {
+	widgets.OnUntypedChange(v.event, func(value interface{}) {
 		switch value.(type) {
 		case event.Request:
 			url := value.(event.Request).Url
@@ -116,7 +116,7 @@ func (p *presenter) Panel() binding.String {
 			panel.Set(fmt.Sprintf("%s CALIBRATING", url))
 		}
 	})
-	widgets.OnUntypedChange(p.now, func(value interface{}) {
+	widgets.OnUntypedChange(v.now, func(value interface{}) {
 		if value == nil || value == clearPanel {
 			panel.Set("Welcome to CK!")
 			return
@@ -128,6 +128,6 @@ func (p *presenter) Panel() binding.String {
 	return panel
 }
 
-func (p *presenter) InputEnabled() binding.Bool {
-	return p.inputEnabled
+func (v *viewModel) InputEnabled() binding.Bool {
+	return v.inputEnabled
 }

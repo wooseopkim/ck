@@ -80,13 +80,14 @@ func NewWidget(
 	widgets.OnStringChange(panel, func(value string) {
 		panelLabel.Text = value
 		panelLabel.Refresh()
+		// Maybe because the panel is updated too quickly,
+		// another widget must be `Refresh`ed for the panel to be updated.
 		submitButton.Refresh()
 	})
 	target := vm.Target()
 	widgets.OnStringChange(target, func(value string) {
 		targetLabel.Text = value
 		targetLabel.Refresh()
-		submitButton.Refresh()
 		testButton.SetText(fmt.Sprintf("Test %s", value))
 	})
 	testResult := vm.TestResult()

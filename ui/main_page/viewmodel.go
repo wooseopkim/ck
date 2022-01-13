@@ -100,7 +100,6 @@ func (v *viewModel) handleSubmit(url string) {
 			case <-v.tickerSubscriptionCanceller:
 				return
 			case now := <-v.ticker.C:
-				fmt.Println(offset, now.Format("15:04:05.99"), now.Add(offset).Format("15:04:05.99"))
 				v.now.Set(now.Add(offset))
 			}
 		}

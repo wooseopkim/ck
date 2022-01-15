@@ -97,10 +97,10 @@ func NewWidget(
 		}
 		testResult := value.(adapters.TestResult)
 		testResultLabel.Text = fmt.Sprintf(
-			"Remote: %s\nClient: %s\nClock: %s",
-			testResult.RemoteTime.Format(timeTemplate),
+			"Client: %s\nClock: %s\nRemote: %s",
 			testResult.ClientTime.Format(timeTemplate),
 			testResult.ClockTime.Format(timeTemplate),
+			testResult.RemoteTime.Format(timeTemplate),
 		)
 		testResultLabel.Refresh()
 		layout.Refresh()

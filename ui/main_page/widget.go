@@ -9,8 +9,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	adapters "github.com/wooseopkim/ck/v2/adapters/main_page"
+	"github.com/wooseopkim/ck/v2/extensions/bindings"
 	"github.com/wooseopkim/ck/v2/usecases"
-	"github.com/wooseopkim/ck/v2/widgets"
 )
 
 const (
@@ -67,7 +67,7 @@ func NewWidget(
 		vm.OnTest()
 	}
 	inputEnabled := vm.InputEnabled()
-	widgets.OnBoolChange(inputEnabled, func(value bool) {
+	bindings.OnBoolChange(inputEnabled, func(value bool) {
 		if value {
 			submitButton.Enable()
 			testButton.Enable()
@@ -77,7 +77,7 @@ func NewWidget(
 		}
 	})
 	panel := vm.Panel()
-	widgets.OnStringChange(panel, func(value string) {
+	bindings.OnStringChange(panel, func(value string) {
 		panelLabel.Text = value
 		panelLabel.Refresh()
 		// Maybe because the panel is updated too quickly,
@@ -85,13 +85,13 @@ func NewWidget(
 		submitButton.Refresh()
 	})
 	target := vm.Target()
-	widgets.OnStringChange(target, func(value string) {
+	bindings.OnStringChange(target, func(value string) {
 		targetLabel.Text = value
 		targetLabel.Refresh()
 		testButton.SetText(fmt.Sprintf("Test %s", value))
 	})
 	testResult := vm.TestResult()
-	widgets.OnUntypedChange(testResult, func(value interface{}) {
+	bindings.OnUntypedChange(testResult, func(value interface{}) {
 		if value == nil {
 			return
 		}
@@ -106,7 +106,7 @@ func NewWidget(
 		layout.Refresh()
 	})
 	testerReady := vm.TesterReady()
-	widgets.OnBoolChange(testerReady, func(value bool) {
+	bindings.OnBoolChange(testerReady, func(value bool) {
 		if value {
 			testerLayout.Show()
 		} else {

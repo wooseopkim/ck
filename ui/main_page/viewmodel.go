@@ -8,8 +8,8 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	adapters "github.com/wooseopkim/ck/v2/adapters/main_page"
 	"github.com/wooseopkim/ck/v2/entities"
+	"github.com/wooseopkim/ck/v2/extensions/bindings"
 	"github.com/wooseopkim/ck/v2/usecases"
-	"github.com/wooseopkim/ck/v2/widgets"
 	"github.com/wooseopkim/goclock/event"
 )
 
@@ -133,7 +133,7 @@ func (v *viewModel) handleTest(url string) {
 
 func (v *viewModel) Panel() binding.String {
 	panel := binding.NewString()
-	widgets.OnUntypedChange(v.inferRemoteTimeEvent, func(value interface{}) {
+	bindings.OnUntypedChange(v.inferRemoteTimeEvent, func(value interface{}) {
 		switch value.(type) {
 		case event.Request:
 			panel.Set("REQUSTED")
@@ -147,7 +147,7 @@ func (v *viewModel) Panel() binding.String {
 			panel.Set("CALIBRATING")
 		}
 	})
-	widgets.OnUntypedChange(v.now, func(value interface{}) {
+	bindings.OnUntypedChange(v.now, func(value interface{}) {
 		if value == nil || value == clearPanel {
 			panel.Set("Type URL above and click the button")
 			return
@@ -163,7 +163,7 @@ func (v *viewModel) Panel() binding.String {
 }
 
 func (v *viewModel) Target() binding.String {
-	widgets.OnUntypedChange(v.inferRemoteTimeEvent, func(value interface{}) {
+	bindings.OnUntypedChange(v.inferRemoteTimeEvent, func(value interface{}) {
 		switch value.(type) {
 		case event.Request:
 			url := value.(event.Request).Url

@@ -1,13 +1,8 @@
-package widgets
+package bindings
 
 import (
 	"fyne.io/fyne/v2/data/binding"
-	"fyne.io/fyne/v2/widget"
 )
-
-func AppendText(label *widget.Label, text string) {
-	label.SetText(label.Text + text)
-}
 
 func OnStringChange(item binding.String, callback func(string)) {
 	item.AddListener(binding.NewDataListener(func() {

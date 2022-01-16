@@ -23,7 +23,7 @@ func NewWidget(
 	testRemoteTime *usecases.TestRemoteTime,
 ) fyne.CanvasObject {
 	urlEntry := widget.NewEntry()
-	protocolSelect := widget.NewSelect([]string{http, https}, func(s string) {})
+	protocolSelect := widget.NewSelect([]string{https, http}, func(s string) {})
 	protocolSelect.SetSelected(protocolSelect.Options[0])
 	inputContainer := fyne.NewContainerWithLayout(
 		layout.NewFormLayout(),
